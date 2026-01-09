@@ -3,206 +3,62 @@ import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Forgot password states
-  const [showForgot, setShowForgot] = useState(false);
-  const [fpEmail, setFpEmail] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [error, setError] = useState("");
-
-  // Password validation
-  const validatePassword = (pwd) => {
-    const regex =
-      /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    return regex.test(pwd);
-  };
-
-  // 🔐 LOGIN
   const handleLogin = (e) => {
     e.preventDefault();
-
     const storedUser = JSON.parse(localStorage.getItem("user"));
 
-    if (!storedUser) {
-      alert("No user registered. Please signup ❌");
+    // Check if account exists
+    if (!storedUser || storedUser.email !== email) {
+      alert("No account found with this Gmail. Please Register. ➡️");
       navigate("/signup");
       return;
     }
 
-    if (email !== storedUser.email) {
-      alert("This email is not registered ❌");
-      return;
-    }
-
+    // Check password
     if (password !== storedUser.password) {
-      alert("Incorrect password ❌");
+      alert("Incorrect password! ❌");
       return;
     }
 
+    // Success
     localStorage.setItem("token", "loggedin");
-    alert("Login successful ✅");
+    alert("Welcome back! ✅");
     window.location.href = "/";
   };
 
-  // 🔁 FORGOT PASSWORD
-  const handleResetPassword = (e) => {
-    e.preventDefault();
-
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-
-    if (!storedUser || fpEmail !== storedUser.email) {
-      setError("Email not registered ❌");
-      return;
-    }
-
-    if (!validatePassword(newPassword)) {
-      setError(
-        "Password must be strong:\n• Minimum 8 characters\n• 1 capital letter\n• 1 number\n• 1 special character"
-      );
-      return;
-    }
-
-    // Update password
-    const updatedUser = {
-      ...storedUser,
-      password: newPassword,
-    };
-
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-
-    alert("Password updated successfully ✅");
-    setShowForgot(false);
-    setError("");
-    setFpEmail("");
-    setNewPassword("");
-  };
-
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <form
-        onSubmit={showForgot ? handleResetPassword : handleLogin}
-        className="w-full max-w-sm p-6 bg-white rounded-lg shadow-md"
-      >
-        <h2 className="mb-6 text-2xl font-semibold text-center">
-          {showForgot ? "Reset Password" : "Log In"}
-        </h2>
+    <div className="relative flex items-center justify-center min-h-screen p-6 overflow-hidden font-sans">
+      <div className="fixed inset-0 z-[-1] bg-[#f8fafc]">
+        <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-green-100 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-pulse"></div>
+        <div className="absolute bottom-[-10%] left-[-10%] w-[60%] h-[60%] bg-blue-100 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-pulse delay-700"></div>
+      </div>
 
-        {!showForgot ? (
-          <>
-            {/* Email */}
-            <div className="mb-4">
-              <label className="block mb-1 text-gray-600">
-                Email
-              </label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter your email"
-              />
-            </div>
+      <form onSubmit={handleLogin} className="w-full max-w-sm p-10 bg-white/60 backdrop-blur-3xl rounded-[3rem] shadow-2xl border border-white">
+        <div className="mb-10 text-center">
+          <h2 className="text-4xl font-black tracking-tighter uppercase text-slate-800">Sign In</h2>
+          <p className="text-[10px] font-bold text-slate-400 tracking-[0.3em] mt-2 italic">AUTHENTICATION REQUIRED</p>
+        </div>
 
-            {/* Password */}
-            <div className="mb-2">
-              <label className="block mb-1 text-gray-600">
-                Password
-              </label>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter your password"
-              />
-            </div>
+        <div className="space-y-5">
+          <input type="email" placeholder="Gmail Address" required value={email} 
+            onChange={(e) => setEmail(e.target.value)} 
+            className="w-full px-5 py-4 border shadow-inner outline-none rounded-2xl bg-white/50 border-slate-200" />
+          
+          <input type="password" placeholder="Password" required value={password} 
+            onChange={(e) => setPassword(e.target.value)} 
+            className="w-full px-5 py-4 border shadow-inner outline-none rounded-2xl bg-white/50 border-slate-200" />
+          
+          <button type="submit" className="w-full py-5 text-xs font-black tracking-widest text-white transition shadow-2xl bg-slate-900 rounded-2xl active:scale-95 shadow-slate-300">
+            PROCEED
+          </button>
+        </div>
 
-            {/* Forgot password */}
-            <p
-              className="mb-4 text-sm text-right text-indigo-600 cursor-pointer hover:underline"
-              onClick={() => setShowForgot(true)}
-            >
-              Forgot password?
-            </p>
-
-            <button
-              type="submit"
-              className="w-full py-2 text-white bg-indigo-600 rounded hover:bg-indigo-700"
-            >
-              Log In
-            </button>
-
-            <p className="mt-4 text-sm text-center">
-              Don’t have an account?{" "}
-              <span
-                onClick={() => navigate("/signup")}
-                className="text-indigo-600 cursor-pointer hover:underline"
-              >
-                Sign up
-              </span>
-            </p>
-          </>
-        ) : (
-          <>
-            {/* Forgot Email */}
-            <div className="mb-4">
-              <label className="block mb-1 text-gray-600">
-                Registered Email
-              </label>
-              <input
-                type="email"
-                required
-                value={fpEmail}
-                onChange={(e) => setFpEmail(e.target.value)}
-                className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-indigo-500"
-                placeholder="example@gmail.com"
-              />
-            </div>
-
-            {/* New Password */}
-            <div className="mb-3">
-              <label className="block mb-1 text-gray-600">
-                New Password
-              </label>
-              <input
-                type="password"
-                required
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-indigo-500"
-                placeholder="Create new password"
-              />
-            </div>
-
-            {error && (
-              <p className="mb-3 text-sm text-red-600 whitespace-pre-line">
-                {error}
-              </p>
-            )}
-
-            <button
-              type="submit"
-              className="w-full py-2 text-white bg-indigo-600 rounded hover:bg-indigo-700"
-            >
-              Update Password
-            </button>
-
-            <p
-              className="mt-4 text-sm text-center text-gray-600 cursor-pointer hover:underline"
-              onClick={() => {
-                setShowForgot(false);
-                setError("");
-              }}
-            >
-              Back to login
-            </p>
-          </>
-        )}
+        <p className="mt-8 text-[11px] text-center text-slate-400 font-medium uppercase tracking-tighter">
+          Don't have an account? <span onClick={() => navigate("/signup")} className="font-black text-blue-600 cursor-pointer hover:underline">Sign Up</span>
+        </p>
       </form>
     </div>
   );
