@@ -1,17 +1,4 @@
-android {
-    namespace "com.number.generator" // THIS MUST MATCH YOUR PACKAGE NAME
-    compileSdk 34
 
-    defaultConfig {
-        applicationId "com.number.generator"
-        minSdk 22
-        targetSdk 34
-        versionCode 1
-        versionName "1.0"
-        
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-}
 buildscript {
     
     repositories {
